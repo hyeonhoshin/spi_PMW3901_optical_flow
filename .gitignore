@@ -1,0 +1,13 @@
+
+
+# Editor stuff #
+################
+.*.swp
+
+
+# Compiler stuff #
+##################
+main
+*.o
+
+
