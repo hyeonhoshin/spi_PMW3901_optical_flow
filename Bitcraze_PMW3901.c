@@ -20,6 +20,11 @@
  * SOFTWARE.
  */
 
+
+// Code was originally from:  https://github.com/bitcraze/Bitcraze_PMW3901.git
+// More changes, Copyright 2018 Mark Fassler
+
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -27,41 +32,6 @@
 #include <sys/ioctl.h>
 
 #include <linux/spi/spidev.h>
-
-
-
-/*
-static int read_register(int fd, char reg, char* rx_buffer, int count) {
-
-	char *tx_buffer;
-	int ret;
-
-	tx_buffer = (char *)calloc(count, sizeof(char));
-	if (tx_buffer == 0) {
-		pabort("failed to malloc tx_buffer");
-	}
-
-	tx_buffer[0] = 0x80 | reg; // setting msb to 1 makes this a "read" operation
-
-	struct spi_ioc_transfer tr = {
-		.tx_buf = (unsigned long)tx_buffer,
-		.rx_buf = (unsigned long)rx_buffer,
-		.len = count,
-		.delay_usecs = delay,
-		.speed_hz = speed,
-		.bits_per_word = bits,
-	};
-
-	ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
-	if (ret < 1) {
-		pabort("can't send spi message");
-	}
-
-	free(tx_buffer);
-
-	return 0;
-}
-*/
 
 
 static uint8_t bits = 8;
@@ -76,7 +46,6 @@ static uint8_t registerRead(int fd, uint8_t reg) {
 
 	tx_buffer[0] = reg;
 	tx_buffer[1] = 0;
-
 
 	struct spi_ioc_transfer tr = {
 		.tx_buf = (unsigned long)tx_buffer,
@@ -97,13 +66,13 @@ static uint8_t registerRead(int fd, uint8_t reg) {
 }
 
 
+
 static int registerWrite(int fd, uint8_t reg, uint8_t value) {
 
 	int ret;
-	//reg |= 0x80u;  // to set the "write" bit, I presume?
 	uint8_t tx_buffer[2];
 
-	tx_buffer[0] = reg | 0x80;
+	tx_buffer[0] = reg | 0x80;  // msb sets a "write" operation, I presume?
 	tx_buffer[1] = value;
 
 	struct spi_ioc_transfer tr = {
@@ -125,9 +94,94 @@ static int registerWrite(int fd, uint8_t reg, uint8_t value) {
 }
 
 
+
+// Performance optimisation registers
+static void initRegisters(int fd) {
+
+	registerWrite(fd, 0x7F, 0x00);
+	registerWrite(fd, 0x61, 0xAD);
+	registerWrite(fd, 0x7F, 0x03);
+	registerWrite(fd, 0x40, 0x00);
+	registerWrite(fd, 0x7F, 0x05);
+	registerWrite(fd, 0x41, 0xB3);
+	registerWrite(fd, 0x43, 0xF1);
+	registerWrite(fd, 0x45, 0x14);
+	registerWrite(fd, 0x5B, 0x32);
+	registerWrite(fd, 0x5F, 0x34);
+	registerWrite(fd, 0x7B, 0x08);
+	registerWrite(fd, 0x7F, 0x06);
+	registerWrite(fd, 0x44, 0x1B);
+	registerWrite(fd, 0x40, 0xBF);
+	registerWrite(fd, 0x4E, 0x3F);
+	//  ... one of the datasheets ends here.  But the code from BitCraze keeps going below:
+
+	registerWrite(fd, 0x7F, 0x08);
+	registerWrite(fd, 0x65, 0x20);
+	registerWrite(fd, 0x6A, 0x18);
+	registerWrite(fd, 0x7F, 0x09);
+	registerWrite(fd, 0x4F, 0xAF);
+	registerWrite(fd, 0x5F, 0x40);
+	registerWrite(fd, 0x48, 0x80);
+	registerWrite(fd, 0x49, 0x80);
+	registerWrite(fd, 0x57, 0x77);
+	registerWrite(fd, 0x60, 0x78);
+	registerWrite(fd, 0x61, 0x78);
+	registerWrite(fd, 0x62, 0x08);
+	registerWrite(fd, 0x63, 0x50);
+	registerWrite(fd, 0x7F, 0x0A);
+	registerWrite(fd, 0x45, 0x60);
+	registerWrite(fd, 0x7F, 0x00);
+	registerWrite(fd, 0x4D, 0x11);
+	registerWrite(fd, 0x55, 0x80);
+	registerWrite(fd, 0x74, 0x1F);
+	registerWrite(fd, 0x75, 0x1F);
+	registerWrite(fd, 0x4A, 0x78);
+	registerWrite(fd, 0x4B, 0x78);
+	registerWrite(fd, 0x44, 0x08);
+	registerWrite(fd, 0x45, 0x50);
+	registerWrite(fd, 0x64, 0xFF);
+	registerWrite(fd, 0x65, 0x1F);
+	registerWrite(fd, 0x7F, 0x14);
+	registerWrite(fd, 0x65, 0x60);
+	registerWrite(fd, 0x66, 0x08);
+	registerWrite(fd, 0x63, 0x78);
+	registerWrite(fd, 0x7F, 0x15);
+	registerWrite(fd, 0x48, 0x58);
+	registerWrite(fd, 0x7F, 0x07);
+	registerWrite(fd, 0x41, 0x0D);
+	registerWrite(fd, 0x43, 0x14);
+	registerWrite(fd, 0x4B, 0x0E);
+	registerWrite(fd, 0x45, 0x0F);
+	registerWrite(fd, 0x44, 0x42);
+	registerWrite(fd, 0x4C, 0x80);
+	registerWrite(fd, 0x7F, 0x10);
+	registerWrite(fd, 0x5B, 0x02);
+	registerWrite(fd, 0x7F, 0x07);
+	registerWrite(fd, 0x40, 0x41);
+	registerWrite(fd, 0x70, 0x00);
+
+	usleep(100000);
+	registerWrite(fd, 0x32, 0x44);
+	registerWrite(fd, 0x7F, 0x07);
+	registerWrite(fd, 0x40, 0x40);
+	registerWrite(fd, 0x7F, 0x06);
+	registerWrite(fd, 0x62, 0xf0);
+	registerWrite(fd, 0x63, 0x00);
+	registerWrite(fd, 0x7F, 0x0D);
+	registerWrite(fd, 0x48, 0xC0);
+	registerWrite(fd, 0x6F, 0xd5);
+	registerWrite(fd, 0x7F, 0x00);
+	registerWrite(fd, 0x5B, 0xa0);
+	registerWrite(fd, 0x4E, 0xA8);
+	registerWrite(fd, 0x5A, 0x50);
+	registerWrite(fd, 0x40, 0x80);
+}
+
+
+
 int Bitcraze_PMW3901_init(int fd) {
 	// Power on reset
-	//registerWrite(fd, 0x3A, 0x5A);
+	registerWrite(fd, 0x3A, 0x5A);
 	usleep(5000);
 
 	// Test the SPI communication, checking chipId and inverse chipId
@@ -151,155 +205,19 @@ int Bitcraze_PMW3901_init(int fd) {
 	registerRead(fd, 0x06);
 	usleep(1000);
 
-	//initRegisters();
+	initRegisters(fd);
 
 	return 0;
 }
 
 
 
-// Functional access
-/*
-void Bitcraze_PMW3901_readMotionCount(int16_t *deltaX, int16_t *deltaY) {
-	registerRead(0x02);
-	*deltaX = ((int16_t)registerRead(0x04) << 8) | registerRead(0x03);
-	*deltaY = ((int16_t)registerRead(0x06) << 8) | registerRead(0x05);
-}
-*/
+void Bitcraze_PMW3901_readMotionCount(int fd, int16_t *deltaX, int16_t *deltaY) {
 
+	registerRead(fd, 0x02);
 
-// Low level register access
-/*
-void Bitcraze_PMW3901_registerWrite(uint8_t reg, uint8_t value) {
-	reg |= 0x80u;
-
-	SPI.beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE3));
-
-	digitalWrite(_cs, LOW);
-
-	delayMicroseconds(50);
-	SPI.transfer(reg);
-	SPI.transfer(value);
-	usleep(50);
-
-	digitalWrite(_cs, HIGH);
-
-	SPI.endTransaction();
-
-	usleep(200);
-}
-*/
-
-/*
-uint8_t Bitcraze_PMW3901::registerRead(uint8_t reg) {
-  reg &= ~0x80u;
-
-  SPI.beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE3));
-
-  digitalWrite(_cs, LOW);
-
-  delayMicroseconds(50);
-  SPI.transfer(reg);
-  delayMicroseconds(50);
-  uint8_t value = SPI.transfer(0);
-  delayMicroseconds(200);
-
-  digitalWrite(_cs, HIGH);
-
-  delayMicroseconds(200);
-
-  SPI.endTransaction();
-
-  return value;
-}
-*/
-
-
-// Performance optimisation registers
-static void Bitcraze_PMW3901_initRegisters(int fd) {
-
-	registerWrite(fd, 0x7F, 0x00);
-	registerWrite(fd, 0x61, 0xAD);
-	registerWrite(fd, 0x7F, 0x03);
-	registerWrite(fd, 0x40, 0x00);
-	registerWrite(fd, 0x7F, 0x05);
-	registerWrite(fd, 0x41, 0xB3);
-	registerWrite(fd, 0x43, 0xF1);
-	registerWrite(fd, 0x45, 0x14);
-	registerWrite(fd, 0x5B, 0x32);
-	registerWrite(fd, 0x5F, 0x34);
-	registerWrite(fd, 0x7B, 0x08);
-	registerWrite(fd, 0x7F, 0x06);
-	registerWrite(fd, 0x44, 0x1B);
-	registerWrite(fd, 0x40, 0xBF);
-	registerWrite(fd, 0x4E, 0x3F);
-	//  ... one of the datasheets ends here.  But the code from BitCraze keeps going below:
-
-
-	usleep(100000);  // not in BitCraze code
-
-/*
-	registerWrite(0x7F, 0x08);
-	registerWrite(0x65, 0x20);
-	registerWrite(0x6A, 0x18);
-	registerWrite(0x7F, 0x09);
-	registerWrite(0x4F, 0xAF);
-	registerWrite(0x5F, 0x40);
-	registerWrite(0x48, 0x80);
-	registerWrite(0x49, 0x80);
-	registerWrite(0x57, 0x77);
-	registerWrite(0x60, 0x78);
-	registerWrite(0x61, 0x78);
-	registerWrite(0x62, 0x08);
-	registerWrite(0x63, 0x50);
-	registerWrite(0x7F, 0x0A);
-	registerWrite(0x45, 0x60);
-	registerWrite(0x7F, 0x00);
-	registerWrite(0x4D, 0x11);
-	registerWrite(0x55, 0x80);
-	registerWrite(0x74, 0x1F);
-	registerWrite(0x75, 0x1F);
-	registerWrite(0x4A, 0x78);
-	registerWrite(0x4B, 0x78);
-	registerWrite(0x44, 0x08);
-	registerWrite(0x45, 0x50);
-	registerWrite(0x64, 0xFF);
-	registerWrite(0x65, 0x1F);
-	registerWrite(0x7F, 0x14);
-	registerWrite(0x65, 0x60);
-	registerWrite(0x66, 0x08);
-	registerWrite(0x63, 0x78);
-	registerWrite(0x7F, 0x15);
-	registerWrite(0x48, 0x58);
-	registerWrite(0x7F, 0x07);
-	registerWrite(0x41, 0x0D);
-	registerWrite(0x43, 0x14);
-	registerWrite(0x4B, 0x0E);
-	registerWrite(0x45, 0x0F);
-	registerWrite(0x44, 0x42);
-	registerWrite(0x4C, 0x80);
-	registerWrite(0x7F, 0x10);
-	registerWrite(0x5B, 0x02);
-	registerWrite(0x7F, 0x07);
-	registerWrite(0x40, 0x41);
-	registerWrite(0x70, 0x00);
-
-	usleep(100000);
-	registerWrite(0x32, 0x44);
-	registerWrite(0x7F, 0x07);
-	registerWrite(0x40, 0x40);
-	registerWrite(0x7F, 0x06);
-	registerWrite(0x62, 0xf0);
-	registerWrite(0x63, 0x00);
-	registerWrite(0x7F, 0x0D);
-	registerWrite(0x48, 0xC0);
-	registerWrite(0x6F, 0xd5);
-	registerWrite(0x7F, 0x00);
-	registerWrite(0x5B, 0xa0);
-	registerWrite(0x4E, 0xA8);
-	registerWrite(0x5A, 0x50);
-	registerWrite(0x40, 0x80);
-*/
+	*deltaX = ((int16_t)registerRead(fd, 0x04) << 8) | registerRead(fd, 0x03);
+	*deltaY = ((int16_t)registerRead(fd, 0x06) << 8) | registerRead(fd, 0x05);
 }
 
 

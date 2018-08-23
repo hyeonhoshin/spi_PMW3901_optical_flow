@@ -1,3 +1,12 @@
+/*
+ * Example user-space driver for the PMW3901 Optical Flow sensor 
+ * from PixArt.  SPI interface.
+ *
+ * Meant for use with NVidia Jetson TX2, but should probably work with others.
+ *
+ * Copyright 2018 Mark Fassler (driver code originally from Bitcraze AB).
+ *
+ */
 
 #include <stdint.h>
 #include <unistd.h>
@@ -12,15 +21,17 @@
 
 static const char *device = "/dev/spidev3.0";
 static uint8_t mode = 0;
-static uint8_t bits = 8;
 static uint32_t speed = 500000;
-static uint16_t delay = 1;
+
 
 
 int main(int argc, char *argv[]) {
 
 	int ret;
 	int fd;
+
+	int16_t deltaX;
+	int16_t deltaY;
 
 	printf("Hello there.\n");
 
@@ -61,6 +72,15 @@ int main(int argc, char *argv[]) {
 
 
 	Bitcraze_PMW3901_init(fd);
+
+	while (1) {
+		usleep(33000);
+
+		Bitcraze_PMW3901_readMotionCount(fd, &deltaX, &deltaY);
+
+		printf("%d %d\n", deltaX, deltaY);
+
+	}
 
 	return 0;
 }
