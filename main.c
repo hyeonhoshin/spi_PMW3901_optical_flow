@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
 
 
 	Bitcraze_PMW3901_init(fd);
-	enableFrameBuffer();
+	enableFrameBuffer(fd);
 
 	while (1) {
 		usleep(33000);
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
 		//Bitcraze_PMW3901_readMotionCount(fd, &deltaX, &deltaY);
 
 		//printf("%d %d\n", deltaX, deltaY);
-		readFrameBuffer(Fbuffer);
+		readFrameBuffer(fd, Fbuffer);
 
 		for(int i = 0; i<35; i++)
 			for(int j=0; j<35; j++)
