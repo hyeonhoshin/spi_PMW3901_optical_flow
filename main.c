@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
 		//Bitcraze_PMW3901_readMotionCount(fd, &deltaX, &deltaY);
 
 		//printf("%d %d\n", deltaX, deltaY);
-		readFrameBuffer(FBuffer)
+		readFrameBuffer(Fbuffer);
 
 		for(int i = 0; i<35; i++)
 			for(int j=0; j<35; j++)
