@@ -19,7 +19,7 @@
 #include "Bitcraze_PMW3901.h"
 
 
-static const char *device = "/dev/spidev3.0";
+static const char *device = "/dev/spidev0.0";
 static uint8_t mode = 0;
 static uint32_t speed = 500000;
 
