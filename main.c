@@ -23,6 +23,7 @@ static const char *device = "/dev/spidev0.0";
 static uint8_t mode = 0;
 static uint32_t speed = 500000;
 
+static char Fbuffer[35*35] = {0x08};
 
 
 int main(int argc, char *argv[]) {
@@ -72,13 +73,21 @@ int main(int argc, char *argv[]) {
 
 
 	Bitcraze_PMW3901_init(fd);
+	enableFrameBuffer();
 
 	while (1) {
 		usleep(33000);
 
-		Bitcraze_PMW3901_readMotionCount(fd, &deltaX, &deltaY);
+		//Bitcraze_PMW3901_readMotionCount(fd, &deltaX, &deltaY);
 
-		printf("%d %d\n", deltaX, deltaY);
+		//printf("%d %d\n", deltaX, deltaY);
+		readFrameBuffer(FBuffer)
+
+		for(int i = 0; i<35; i++)
+			for(int j=0; j<35; j++)
+				printf("%03d ",Fbuffer);
+			printf("\n");
+		printf("\n");
 
 	}
 

@@ -6,6 +6,9 @@
 extern int Bitcraze_PMW3901_init(int);
 extern void Bitcraze_PMW3901_readMotionCount(int, int16_t*, int16_t*);
 
+extern void enableFrameBuffer();
+extern void readFrameBuffer(char *FBuffer);
+
 #endif // __SPI_PMW3901
 
 
