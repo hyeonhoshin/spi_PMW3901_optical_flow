@@ -244,7 +244,7 @@ void enableFrameBuffer(int fd)
     temp = registerRead(fd, 0x58); //keep reading and testing 
     check = temp>>6; //shift again 
   }  
-  delayMicroseconds(50);
+  usleep(50);
 }
 
 void readFrameBuffer(int fd, char *FBuffer)
