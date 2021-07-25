@@ -20,8 +20,8 @@
 
 
 static const char *device = "/dev/spidev0.0";
-static uint8_t mode = 0;
-static uint32_t speed = 500000;
+static uint8_t mode = 3;//Basic mode setting 0. 3 is properly worked;
+static uint32_t speed = 5000000;
 
 static char Fbuffer[35*35] = {0x08};
 
@@ -83,10 +83,22 @@ int main(int argc, char *argv[]) {
 		//printf("%d %d\n", deltaX, deltaY);
 		readFrameBuffer(fd, Fbuffer);
 
-		for(int i = 0; i<35; i++)
-			for(int j=0; j<35; j++)
-				printf("%03d ",Fbuffer);
+		int seeing = 0;
+		char prior = 0x08;
+		for(int i = 0; i<35; i++){
+			printf("Line %d : ",i);
+			for(int j=0; j<35; j++){
+				seeing++;
+				printf("%03d ",Fbuffer[seeing]);
+
+				if(Fbuffer[seeing]==0 & prior == 0){
+					printf("The 0s occur from row %d, col %d\n",i,j);
+					return -1;
+				}
+				prior = Fbuffer[seeing];
+			}
 			printf("\n");
+		}
 		printf("\n");
 
 	}
