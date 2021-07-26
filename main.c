@@ -75,33 +75,24 @@ int main(int argc, char *argv[]) {
 	Bitcraze_PMW3901_init(fd);
 	enableFrameBuffer(fd);
 
-	while (1) {
-		usleep(33000);
 
-		//Bitcraze_PMW3901_readMotionCount(fd, &deltaX, &deltaY);
+	usleep(33000);
 
-		//printf("%d %d\n", deltaX, deltaY);
-		readFrameBuffer(fd, Fbuffer);
+	//Bitcraze_PMW3901_readMotionCount(fd, &deltaX, &deltaY);
 
-		int seeing = 0;
-		char prior = 0x08;
-		for(int i = 0; i<35; i++){
-			printf("Line %d : ",i);
-			for(int j=0; j<35; j++){
-				seeing++;
-				printf("%03d ",Fbuffer[seeing]);
+	//printf("%d %d\n", deltaX, deltaY);
+	readFrameBuffer(fd, Fbuffer);
 
-				if(Fbuffer[seeing]==0 & prior == 0){
-					printf("The 0s occur from row %d, col %d\n",i,j);
-					return -1;
-				}
-				prior = Fbuffer[seeing];
-			}
-			printf("\n");
-		}
-		printf("\n");
+	FILE* fp = fopen(argv[1], "w");
 
-	}
+	for (int i = 0; i < 35; i++) {
+        for (int j = 1; j < 35; j++) {
+            if (j != 34) fprintf(fp, "%d,", Fbuffer[35*i+j]);
+            else fprintf(fp, "%d\n", Fbuffer[35*i+j]);
+        }
+    }
+
+	fclose(fp);
 
 	return 0;
 }
