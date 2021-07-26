@@ -83,16 +83,22 @@ int main(int argc, char *argv[]) {
 	//printf("%d %d\n", deltaX, deltaY);
 	readFrameBuffer(fd, Fbuffer);
 
-	FILE* fp = fopen(argv[1], "w");
+	printf("Comming?\n");
+
+	printf("Writing into... %s\n",argv[1]);
+
+	if(argc < 2) return -1;
+
+	FILE* fp_txt = fopen(argv[1], "w");
 
 	for (int i = 0; i < 35; i++) {
         for (int j = 1; j < 35; j++) {
-            if (j != 34) fprintf(fp, "%d,", Fbuffer[35*i+j]);
-            else fprintf(fp, "%d\n", Fbuffer[35*i+j]);
+            if (j != 34) fprintf(fp_txt, "%d,", Fbuffer[35*i+j]);
+            else fprintf(fp_txt, "%d\n", Fbuffer[35*i+j]);
         }
     }
 
-	fclose(fp);
+	fclose(fp_txt);
 
 	return 0;
 }

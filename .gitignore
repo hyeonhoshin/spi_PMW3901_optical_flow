@@ -9,5 +9,9 @@
 ##################
 main
 *.o
+/.vscode
+/build
+/CMakeFiles
+*.csv
 
 
