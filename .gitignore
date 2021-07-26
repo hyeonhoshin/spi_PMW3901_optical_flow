@@ -9,5 +9,6 @@
 ##################
 main
 *.o
-
-
+/CMakeFiles
+/build
+/.vscode

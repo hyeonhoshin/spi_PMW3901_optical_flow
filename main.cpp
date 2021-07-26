@@ -7,7 +7,7 @@
  * Copyright 2018 Mark Fassler (driver code originally from Bitcraze AB).
  *
  */
-
+extern "C" {
 #include <stdint.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -15,9 +15,10 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/spi/spidev.h>
-
 #include "Bitcraze_PMW3901.h"
+}
 
+#include "cv.hpp"
 
 static const char *device = "/dev/spidev0.0";
 static uint8_t mode = 3;//Basic mode setting 0. 3 is properly worked;
@@ -35,6 +36,8 @@ int main(int argc, char *argv[]) {
 	int16_t deltaY;
 
 	printf("Hello there.\n");
+
+	test_cv("mary.jpg");
 
 	// Open SPI channel
 	fd = open(device, O_RDWR);
@@ -71,7 +74,7 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-
+	/*
 	Bitcraze_PMW3901_init(fd);
 	enableFrameBuffer(fd);
 
@@ -102,6 +105,7 @@ int main(int argc, char *argv[]) {
 		printf("\n");
 
 	}
+	*/
 
 	return 0;
 }
