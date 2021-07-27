@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
 
 	for(int frame = FRAME_NUM; frame>=0; frame--){
 		#ifdef __DEBUG__
-		fprintf("Frame %d : \n",frame);
+		fprintf(fp_txt,"Frame %d : \n",frame);
 		#endif
 		for (int i = 0; i < 35; i++) {
 			for (int j = 1; j < 35; j++) {
