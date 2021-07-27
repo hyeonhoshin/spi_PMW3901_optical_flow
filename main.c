@@ -98,8 +98,8 @@ int main(int argc, char *argv[]) {
 		#endif
 		for (int i = 0; i < 35; i++) {
 			for (int j = 1; j < 35; j++) {
-				if (j != 34) fprintf(fp_txt, "%d,", Fbuffer[frame][35*i+j]);
-				else fprintf(fp_txt, "%d\n", Fbuffer[frame][35*i+j]);
+				if (j != 34) fprintf(fp_txt, "%d,", Fbuffer[35*i+j]);
+				else fprintf(fp_txt, "%d\n", Fbuffer[35*i+j]);
 			}
 		}
 	}

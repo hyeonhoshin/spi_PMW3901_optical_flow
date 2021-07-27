@@ -274,7 +274,6 @@ void readFrameBuffer(int fd, char *FBuffer)
       pixel = pixel << 2; //push left to 7:2
       pixel += (b & mask); //set lower 2 from b to 1:0
       FBuffer[count++] = pixel; //put temp value in fbuffer arra
-	  printf("p : %d", pixel);
       //delayMicroseconds(100);
     }
     else {}
