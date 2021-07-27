@@ -20,9 +20,11 @@
 
 #define FRAME_NUM 2
 
+#define __DEBUG__
+
 static const char *device = "/dev/spidev0.0";
 static uint8_t mode = 3;//Basic mode setting 0. 3 is properly worked;
-static uint32_t speed = 5000000;
+static uint32_t speed = 20000000; //20Mhz.
 
 static char Fbuffer[FRAME_NUM][35*35] = {0x08};
 
@@ -77,10 +79,11 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-
 	Bitcraze_PMW3901_init(fd);
-	enableFrameBuffer(fd);
+	printf("Sensor initialized...\n");
 
+	enableFrameBuffer(fd);
+	printf("Frame buffer initialized...\n");
 
 	usleep(33000);
 
@@ -89,22 +92,25 @@ int main(int argc, char *argv[]) {
 	//printf("%d %d\n", deltaX, deltaY);
 	readFrameBuffer(fd, Fbuffer[0]);
 	readFrameBuffer(fd, Fbuffer[1]);
-	/*
-	printf("Comming?\n");
 
 	printf("Writing into... %s\n",argv[1]);
 
 	FILE* fp_txt = fopen(argv[1], "w");
 
-	for (int i = 0; i < 35; i++) {
-        for (int j = 1; j < 35; j++) {
-            if (j != 34) fprintf(fp_txt, "%d,", Fbuffer[35*i+j]);
-            else fprintf(fp_txt, "%d\n", Fbuffer[35*i+j]);
-        }
-    }
+	for(int frame = FRAME_NUM; frame>=0; frame--){
+		#ifdef __DEBUG__
+		fprintf("Frame %d : \n",frame);
+		#endif
+		for (int i = 0; i < 35; i++) {
+			for (int j = 1; j < 35; j++) {
+				if (j != 34) fprintf(fp_txt, "%d,", Fbuffer[frame][35*i+j]);
+				else fprintf(fp_txt, "%d\n", Fbuffer[frame][35*i+j]);
+			}
+		}
+	}
 
 	fclose(fp_txt);
-	*/
+	
 	return 0;
 }
 
