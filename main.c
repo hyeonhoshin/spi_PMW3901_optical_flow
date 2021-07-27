@@ -26,7 +26,7 @@ static const char *device = "/dev/spidev0.0";
 static uint8_t mode = 3;//Basic mode setting 0. 3 is properly worked;
 static uint32_t speed = 20000000; //20Mhz.
 
-static char Fbuffer[FRAME_NUM][35*35] = {0x08};
+static char Fbuffer[35*35] = {0x08};
 
 
 int main(int argc, char *argv[]) {
@@ -87,36 +87,12 @@ int main(int argc, char *argv[]) {
 
 	usleep(33000);
 
-	printf("Before read : \n");
-
-	for(int frame = FRAME_NUM-1; frame>=0; frame--){
-		for(int i = 0; i<35; i++){
-			for(int j = 0; j<35; j++){
-				printf("%d ",Fbuffer[frame][35*i+j]);
-			}
-			printf("\n");
-		}
-	}
-	
-	readFrameBuffer(fd, Fbuffer[0]);
-	readFrameBuffer(fd, Fbuffer[1]);
-
-	printf("After read : \n");
-
-	for(int frame = FRAME_NUM-1; frame>=0; frame--){
-		for(int i = 0; i<35; i++){
-			for(int j = 0; j<35; j++){
-				printf("%d ",Fbuffer[frame][35*i+j]);
-			}
-			printf("\n");
-		}
-	}
-
 	printf("Writing into... %s\n",argv[1]);
 
 	FILE* fp_txt = fopen(argv[1], "w");
 
 	for(int frame = FRAME_NUM-1; frame>=0; frame--){
+		readFrameBuffer(fd, Fbuffer);
 		#ifdef __DEBUG__
 		fprintf(fp_txt,"Frame %d : \n",frame);
 		#endif
