@@ -18,15 +18,21 @@
 
 #include "Bitcraze_PMW3901.h"
 
+#define FRAME_NUM 2
 
 static const char *device = "/dev/spidev0.0";
 static uint8_t mode = 3;//Basic mode setting 0. 3 is properly worked;
 static uint32_t speed = 5000000;
 
-static char Fbuffer[35*35] = {0x08};
+static char Fbuffer[FRAME_NUM][35*35] = {0x08};
 
 
 int main(int argc, char *argv[]) {
+
+	if(argc < 2){
+		printf("Error. Few elements.\n");
+		return -1;
+	}
 
 	int ret;
 	int fd;
@@ -81,13 +87,12 @@ int main(int argc, char *argv[]) {
 	//Bitcraze_PMW3901_readMotionCount(fd, &deltaX, &deltaY);
 
 	//printf("%d %d\n", deltaX, deltaY);
-	readFrameBuffer(fd, Fbuffer);
-
+	readFrameBuffer(fd, Fbuffer[0]);
+	readFrameBuffer(fd, Fbuffer[1]);
+	/*
 	printf("Comming?\n");
 
 	printf("Writing into... %s\n",argv[1]);
-
-	if(argc < 2) return -1;
 
 	FILE* fp_txt = fopen(argv[1], "w");
 
@@ -99,7 +104,7 @@ int main(int argc, char *argv[]) {
     }
 
 	fclose(fp_txt);
-
+	*/
 	return 0;
 }
 
