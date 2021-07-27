@@ -87,11 +87,30 @@ int main(int argc, char *argv[]) {
 
 	usleep(33000);
 
-	//Bitcraze_PMW3901_readMotionCount(fd, &deltaX, &deltaY);
+	printf("Before read : \n");
 
-	//printf("%d %d\n", deltaX, deltaY);
+	for(int frame = FRAME_NUM; frame>=0; frame--){
+		for(int i = 0; i<35; i++){
+			for(int j = 0; j<35; j++){
+				printf("%d ",Fbuffer[frame][35*i+j]);
+			}
+			printf("\n");
+		}
+	}
+	
 	readFrameBuffer(fd, Fbuffer[0]);
 	readFrameBuffer(fd, Fbuffer[1]);
+
+	printf("After read : \n");
+
+	for(int frame = FRAME_NUM; frame>=0; frame--){
+		for(int i = 0; i<35; i++){
+			for(int j = 0; j<35; j++){
+				printf("%d ",Fbuffer[frame][35*i+j]);
+			}
+			printf("\n");
+		}
+	}
 
 	printf("Writing into... %s\n",argv[1]);
 
