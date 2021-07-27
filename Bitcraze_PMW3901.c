@@ -35,7 +35,7 @@
 
 
 static uint8_t bits = 8;
-static uint32_t speed = 20000000; //20Mhz.
+static uint32_t speed = 1000000; //1Mhz.
 static uint16_t delay = 1;
 
 
@@ -272,11 +272,13 @@ void readFrameBuffer(int fd, char *FBuffer)
       b = registerRead(fd, 0x58); //read next set to get lower 2 bits
       pixel = a; //set pixel to a
       pixel = pixel << 2; //push left to 7:2
-      pixel += (b & mask); //set lower 2 from b to 1:0
-      FBuffer[count++] = pixel; //put temp value in fbuffer arra
+      pixel += ((b & mask)>>2); //set lower 2 from b to 1:0
+      FBuffer[count++] = pixel; //put temp value in fbuffer array
       //delayMicroseconds(100);
-    }
+	}
     else {}
+
+	//printf("a = %x, b = %x\n",a,b);
   }
   registerWrite(fd, 0x70, 0x00);   //More magic? 
   registerWrite(fd, 0x58, 0xFF);

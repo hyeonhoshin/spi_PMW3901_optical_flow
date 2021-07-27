@@ -15,16 +15,17 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/spi/spidev.h>
+#include <time.h>
 
 #include "Bitcraze_PMW3901.h"
 
-#define FRAME_NUM 2
+#define FRAME_NUM 1
 
-#define __DEBUG__
+//#define __DEBUG__
 
 static const char *device = "/dev/spidev0.0";
 static uint8_t mode = 3;//Basic mode setting 0. 3 is properly worked;
-static uint32_t speed = 20000000; //20Mhz.
+static uint32_t speed = 2000000; //20Mhz.
 
 static char Fbuffer[35*35] = {0x08};
 
@@ -91,18 +92,34 @@ int main(int argc, char *argv[]) {
 
 	FILE* fp_txt = fopen(argv[1], "w");
 
+	clock_t start1 = clock();
+	/*
+	for(int frame = FRAME_NUM-1; frame>=0; frame--){
+		printf("Frame %d is being read\n",frame);
+		readFrameBuffer(fd, Fbuffer);
+	}
+	*/
 	for(int frame = FRAME_NUM-1; frame>=0; frame--){
 		readFrameBuffer(fd, Fbuffer);
 		#ifdef __DEBUG__
 		fprintf(fp_txt,"Frame %d : \n",frame);
 		#endif
 		for (int i = 0; i < 35; i++) {
-			for (int j = 1; j < 35; j++) {
+			for (int j = 0; j < 35; j++) {
 				if (j != 34) fprintf(fp_txt, "%d,", Fbuffer[35*i+j]);
 				else fprintf(fp_txt, "%d\n", Fbuffer[35*i+j]);
 			}
+			//fprintf(fp_txt, "\n");
 		}
+		fprintf(fp_txt,"\n");
 	}
+
+	clock_t end1 = clock();
+
+	float res1 = (float)(end1-start1)/CLOCKS_PER_SEC;
+
+	printf("consumed time : %f\n", res1);
+	printf("Estimated fps : %f\n", FRAME_NUM/res1);
 
 	fclose(fp_txt);
 	
