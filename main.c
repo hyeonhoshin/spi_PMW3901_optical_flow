@@ -19,7 +19,7 @@
 
 #include "Bitcraze_PMW3901.h"
 
-#define FRAME_NUM 1
+#define FRAME_NUM 300
 
 //#define __DEBUG__
 
