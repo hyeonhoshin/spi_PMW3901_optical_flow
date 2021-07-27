@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
 
 	printf("Before read : \n");
 
-	for(int frame = FRAME_NUM; frame>=0; frame--){
+	for(int frame = FRAME_NUM-1; frame>=0; frame--){
 		for(int i = 0; i<35; i++){
 			for(int j = 0; j<35; j++){
 				printf("%d ",Fbuffer[frame][35*i+j]);
@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
 
 	printf("After read : \n");
 
-	for(int frame = FRAME_NUM; frame>=0; frame--){
+	for(int frame = FRAME_NUM-1; frame>=0; frame--){
 		for(int i = 0; i<35; i++){
 			for(int j = 0; j<35; j++){
 				printf("%d ",Fbuffer[frame][35*i+j]);
@@ -116,7 +116,7 @@ int main(int argc, char *argv[]) {
 
 	FILE* fp_txt = fopen(argv[1], "w");
 
-	for(int frame = FRAME_NUM; frame>=0; frame--){
+	for(int frame = FRAME_NUM-1; frame>=0; frame--){
 		#ifdef __DEBUG__
 		fprintf(fp_txt,"Frame %d : \n",frame);
 		#endif
